@@ -1,0 +1,47 @@
+stages:
+  - SAST
+  - SCA
+  - DAST
+
+sast-job:
+  stage: SAST
+  image: sonarsource/sonar-scanner-cli:latest
+  script:
+    - sonar-scanner
+      -Dsonar.host.url=https://sonarcloud.io/
+      -Dsonar.organization=gitlabdvwadevsecopsproject
+      -Dsonar.projectKey=gitlabdvwadevsecopsproject
+      -Dsonar.sources=.
+      -Dsonar.token=db038e1d75fddabfee69310163f3da2aaa4aba04
+      -Dsonar.projectName="DVWA"
+      -Dsonar.sourceEncoding=UTF-8
+      -Dsonar.language=php
+      -Dsonar.php.file.suffixes=php,php3,php4,php5,phtml,inc
+      -Dsonar.exclusions=**/vendor/**,**/tests/**,**/external/**
+
+sca-job:
+  stage: SCA
+  image:
+    name: snyk/snyk:php
+    entrypoint: [""]
+  script:
+    - snyk auth $SNYK_TOKEN
+    - snyk test --all-projects --json-file-output=snyk_report.json
+  artifacts:
+    paths:
+      - snyk_report.json
+    expire_in: 1 week
+
+dast-job:
+    stage: DAST
+    image: eclipse-temurin:17-jdk
+    script: |
+      apt-get update && apt-get -y install wget
+      wget https://github.com/zaproxy/zaproxy/releases/download/v2.16.1/ZAP_2.16.1_Linux.tar.gz
+      mkdir zap
+      tar -xvf ZAP_2.16.1_Linux.tar.gz
+      cd ZAP_2.16.1
+      ./zap.sh -cmd -quickurl https://www.example.com -quickprogress -quickout ../zap_report.html 
+    artifacts:
+      paths:
+        - zap_report.html
