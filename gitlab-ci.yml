@@ -12,7 +12,7 @@ sast-job:
       -Dsonar.organization=gitlabdvwadevsecopsproject
       -Dsonar.projectKey=gitlabdvwadevsecopsproject
       -Dsonar.sources=.
-      -Dsonar.token=db038e1d75fddabfee69310163f3da2aaa4aba04
+      -Dsonar.token=redacted
       -Dsonar.projectName="DVWA"
       -Dsonar.sourceEncoding=UTF-8
       -Dsonar.language=php
